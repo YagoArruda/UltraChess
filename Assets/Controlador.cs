@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Mathematics;
 using UnityEngine;
 
 public class Controlador : MonoBehaviour
@@ -7,11 +8,26 @@ public class Controlador : MonoBehaviour
     [SerializeField]
     private GameObject peca_selecionada = null;
     [SerializeField]
-    private float tamanho_peca_selecionada = 1;
+    private float tamanho_peca_selecionada = 1.1f;
+
+
+    [SerializeField]
+    public int[,] referencia_tabuleiro = new int[8,8];
+
+    [SerializeField]
+    public List<GameObject> ladrilhos = new List<GameObject>();
+
 
     void Start()
     {
-        
+        for (int i = 0; i < 8; i++)
+        {
+            for (int j = 0; j < 8; j++)
+            {
+                referencia_tabuleiro[i, j] = -1;
+            }
+        }
+
     }
 
     void Update()
@@ -26,61 +42,46 @@ public class Controlador : MonoBehaviour
             Vector2 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             RaycastHit2D hit = Physics2D.Raycast(mousePosition, Vector2.zero);
 
-            GameObject peca = get_peca_selecionada();
 
             if (hit.collider != null)
             {
-                
-                Debug.Log("Objeto clicado: " + hit.collider.gameObject.name);
-                
-                if (peca == null)// && hit.transform.tag == "Peça"
-                {
-                    peca = hit.collider.gameObject;
+                Debug.Log(hit.transform.name);
 
-                    float tamanho_alterado = get_tamanho_peca_selecionada();
-                    peca.transform.localScale = new Vector3(tamanho_alterado,tamanho_alterado,tamanho_alterado);
+                if (peca_selecionada == null)
+                {
+                    if (hit.transform.tag == "Peça")
+                    {
+                        peca_selecionada = hit.collider.gameObject;
+                        float tamanho_alterado = tamanho_peca_selecionada;
+                        peca_selecionada.transform.GetComponent<Movimento>().tamanho = tamanho_alterado;
+                        peca_selecionada.transform.GetComponent<Movimento>().selecionado = true;
+                    }
                 }
                 else
                 {
-                    peca.transform.position = hit.collider.transform.localPosition;
-                    limpar_peca_selecionada();
+                    peca_selecionada.transform.position = hit.collider.transform.localPosition;
+                    peca_selecionada.transform.GetComponent<Movimento>().selecionado = false;
+                    if (hit.transform.tag != "Peça")
+                    {
+                        peca_selecionada.transform.GetComponent<Movimento>().movimentos_feitos++;
+                    }
+                    peca_selecionada = null;
                 }
             }
             else
             {
-                if (peca != null)
+                if (peca_selecionada != null)
                 {
-                    peca.transform.localScale = new Vector3(1,1,1);
+                    peca_selecionada.transform.GetComponent<Movimento>().selecionado = false;
                 }
-                peca = null;
+                peca_selecionada = null;
             }
         }
     }
 
-
-
-    public GameObject get_peca_selecionada()
+    public void ativar_ladrilho(int pos_x, int pos_y)
     {
-        return peca_selecionada;
+        ladrilhos[(8*8)-1].SetActive(true);
+        Debug.Log(pos_x +" / " + pos_y + " /// " + pos_x + 1 * pos_y + 1);
     }
-
-    public void set_peca_selecionada(GameObject entrada)
-    {
-        peca_selecionada = entrada;
-    }
-
-    public void limpar_peca_selecionada()
-    {
-        if (get_peca_selecionada() != null)
-        {
-            get_peca_selecionada().transform.localScale = new Vector3(1,1,1);
-        }
-        set_peca_selecionada(null);
-    }
-
-    public float get_tamanho_peca_selecionada()
-    {
-        return tamanho_peca_selecionada;
-    }
-
 }
