@@ -21,7 +21,8 @@ UltraChess é um projeto de xadrez criado na Unity, com o objetivo de proporcion
 - 🎨 **Aseprite** 
 
 ## 📸 Capturas de Tela 
-
+![Versão preliminar 27/02/2025](Assets/Imgs-Git/cap1.png)
+*Versão preliminar - 27/02/2025
 
 ## 🤝 Contribuição
 Se quiser contribuir, fique à vontade para abrir uma **issue** ou enviar um **pull request**.  
